@@ -8,7 +8,6 @@ import requests
 import optparse
 import sys
 import base64
-import time
 from bs4 import BeautifulSoup
 from multiprocessing.dummy import Lock
 from multiprocessing.dummy import Pool as ThreadPool
@@ -25,12 +24,13 @@ mutex = Lock()
 
 dork = ""
 outfile = ""
+search_type ='www'
 def put_file_contents(filename,contents):
     with open(filename,"ab+") as fin:
         fin.write(contents+'\n')
 
 
-def get_result(html):
+def get_www_result(html):
     global outfile
     try:
         soup = BeautifulSoup(html, 'html.parser')
@@ -47,7 +47,27 @@ def get_result(html):
     return
 
 
+def get_host_result(html):
+    global outfile
+    try:
+        soup = BeautifulSoup(html, 'html.parser')
+        div = soup.find_all('div', attrs={'class': 'list_mod_t'})
+        _soup = BeautifulSoup(str(div), 'html.parser')
+        a = _soup.find_all('div', attrs={'class': 'ip-no-url'})
+        if a:
+            for host in a:
+
+                host = (host.string).replace(r'\n','').strip()
+                print(host)
+                put_file_contents(outfile,host)
+
+    except Exception,e:
+        print(e.message)
+    return
+
+
 def fofa_query(all_pages,dork):
+    global search_type
     ret = ""
     url = "https://fofa.so/result?"
     qbase = base64.b64encode(dork)
@@ -56,7 +76,10 @@ def fofa_query(all_pages,dork):
         try:
             res = req.get(url,params= params,headers=headers)
             text = res.content
-            get_result(text)
+            if search_type =='www':
+                get_www_result(text)
+            if search_type == 'host':
+                get_host_result(text)
         except Exception,e:
             print e.message
     return
@@ -71,10 +94,14 @@ def fofa_query_sing(page_num):
     try:
         res = req.get(url, params=params, headers=headers)
         text = res.content
-        get_result(text)
+        if search_type == 'www':
+            get_www_result(text)
+        if search_type == 'host':
+            get_host_result(text)
     except Exception,e:
         print e.message
         pass
+
 
 def fofa_query_mult(all_pages,dork,threads):
     try:
@@ -93,6 +120,16 @@ def fofa_query_mult(all_pages,dork,threads):
 
 
 def main():
+    banner = '''         
+   ___       ___        ___ _          __
+  / _/___   / _/___ _  / _/(_)___  ___/ /
+ / _// _ \ / _// _ `/ / _// // _ \/ _  / 
+/_/  \___//_/  \_,_/ /_/ /_//_//_/\_,_/  
+                                         
+            version: 1.0.2
+            mailto:root@flystart.org
+    '''
+
     commandList = optparse.OptionParser(usage='%prog -c cookie -q dork [-n pages -t thread_num -o save_result.txt ',
                                       version='1.0')
     commandList.add_option('-c','--cookie',action='store',
@@ -100,25 +137,29 @@ def main():
     commandList.add_option('-q', '--dork', action='store',
                            help='Insert fofa query dork')
     commandList.add_option('-n', '--limit', action='store',default=20,type = int,
-                           help='Insert query all pages:defalut:20',)
+                           help='set search page numbers:defalut:20',)
+    commandList.add_option('-s', '--type', action='store', default='www',
+                           help='set search search type.[www|host] default:www' )
     commandList.add_option('-t', '--threads', action='store', default=20, type=int,
                            help='Insert query all pages:defalut:20', )
     commandList.add_option('-o','--outfile',action='store',default="fofa_result.txt",
-                           help='Insert save filename  ::')
+                           help='Insert save filename. defualt:fofa_result.txt')
     options,remainder = commandList.parse_args()
     cookie = options.cookie
-    global dork,outfile
+    global dork,outfile,search_type
     dork = options.dork
+    search_type = options.type
     threads = options.threads
-    print dork
     number_page =options.limit
     outfile = options.outfile
     if not cookie or not dork or not outfile:
+        print('\033[1;34m' + banner + '\033[0m')
         commandList.print_help()
         sys.exit(1)
     dork = dork.decode("GB2312").encode("UTF-8")
     headers['Cookie'] = cookie
     # fofa_query(number_page,dork)
+    print(dork)
     fofa_query_mult(number_page, dork, threads)
     return
 
