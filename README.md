@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 
 
@@ -172,3 +173,11 @@ class DATA_AND(object):
 *ReadMe* : https://forum.90sec.com/t/topic/1076
 
 ---
+=======
+# SomeTools
+自己使用的一些脚本和工具.
+
+## fofa_search.py
+fofa 采集脚本
+![1](https://github.com/ggg4566/SomeTools/blob/master/images/fofa_.png)
+>>>>>>> a15c3c414f80b2332e92b9e44d9bda1ca3cd942e
