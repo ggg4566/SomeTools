@@ -26,8 +26,8 @@ example:
   ```
   fofa dork:org="XXX Limited" && region="CN" && protocol=="ajp"
   ```
-  ![image-20200524100713379](images\fofa_v2.png)
-  ![](images\test_1.png)
+  ![image-20200524100713379](images/fofa_v2.png)
+  ![](images/test_1.png)
 
 *ReadMe*：https://forum.90sec.com/t/topic/1051
 
@@ -100,7 +100,7 @@ def double_search(table_name, col_name, in_limit='0', index="", query =query,lef
 
 ```v= a*2^7+b*2^6+c*2^5+d*2^4+e*2^3+f*2^2+g*2^1+h*2^0  ```，其中[a-h]是八个二进制位，只需要进行 v&[2^i],i 属于 [0-7]，然后分别把得到的结果相加就可以得到 v，为了能够方便的多线程并发，可以假设[a-h]都是1,当假设成立的时候，条件为真，可以不做处理，否则将对应的二进制值置为0，最后按照前文计算公式得到v的值，进而获取全部数据。
 
-![image-20200529205101029](images\image-20200529205101029.png)
+![image-20200529205101029](images/image-20200529205101029.png)
 
 ```python
 def get_values_by_and_blind(table_name, col_name, in_limit='0', query =query):
@@ -166,9 +166,9 @@ class DATA_AND(object):
             print '[!] user quit!'
             sys.exit(1)
 ```
-![image-20200529234700625](images\image-20200529234700625.png)
+![image-20200529234700625](images/image-20200529234700625.png)
 
-![image-20200529234735321](images\image-20200529234735321.png)
+![image-20200529234735321](images/image-20200529234735321.png)
 
 *ReadMe* : https://forum.90sec.com/t/topic/1076
 
